@@ -19,10 +19,10 @@ end
 
 stroke_axis
 
-font "Helvetica", :size => 14, :style => :bold
-text_box "address_info(ship_address)",
-          :at => [120, 600],
-          :width => 130,
+font "Helvetica", :size => 12
+text_box address_info(ship_address),
+          :at => [50, 620],
+          :width => 200,
           :height => 100 
 
 stroke_line [0, 490], [270, 490]
