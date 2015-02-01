@@ -39,7 +39,7 @@ else
 end
 
 if @hide_prices
-  font_size => 9
+  font_size 9
   text_box "#{Spree.t(:number => @order.number)}",
             :at => [200, 700],
             :width => 40,
