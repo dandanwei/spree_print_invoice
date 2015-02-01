@@ -17,8 +17,6 @@ def address_info(address)
   info.strip
 end
 
-stroke_axis
-
 font "Helvetica", :size => 12
 text_box address_info(ship_address),
           :at => [50, 620],
