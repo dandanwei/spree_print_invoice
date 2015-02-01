@@ -40,7 +40,7 @@ end
 
 if @hide_prices
   font_size 9
-  text_box "#{Spree.t(:order_number, :number => @order.number)}",
+  text_box "#{Spree.t(@order.number)}",
             :at => [200, 700],
             :width => 60,
             :height => 20
@@ -51,7 +51,7 @@ end
 font @font_face, :size => 9
 render :partial => "address"
 
-move_down 30
+move_down 230
 
 render :partial => "line_items_box"
 
