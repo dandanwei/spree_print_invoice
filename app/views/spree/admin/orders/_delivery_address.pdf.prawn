@@ -19,7 +19,7 @@ end
 
 stroke_axis
 
-font :size => 9
+font_size 9
 
 font "Helvetica", :size => 14, :style => :bold
 text_box "address_info(ship_address)",
