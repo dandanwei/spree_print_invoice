@@ -19,7 +19,10 @@ move_down 4
 
 if Spree::PrintInvoice::Config.use_sequential_number? && @order.invoice_number.present? && !@hide_prices
 
+  move_down 2
   font @font_face,  :size => 9,  :style => :bold
+  text "#{Spree.t(:order_number, :number => @order.number)}", :align => :right
+
   text "#{Spree.t(:invoice_number)} #{@order.invoice_number}", :align => :right
 
   move_down 2
@@ -51,12 +54,19 @@ end
 font @font_face, :size => 9
 render :partial => "address"
 
-move_down 230
+if @hide_prices
+  move_down 230
+else
+  move_down 30
+end
 
 render :partial => "line_items_box"
 
-move_down 8
+
 
 # Footer
-render :partial => "footer"
+if !@hide_prices
+  move_down 600
+  render :partial => "footer"
+end
 

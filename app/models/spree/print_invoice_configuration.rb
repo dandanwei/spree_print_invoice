@@ -7,6 +7,9 @@ module Spree
     preference :print_invoice_font_face, :string, :default => 'Helvetica'
     preference :print_buttons, :string, :default => 'invoice'
     preference :prawn_options, :hash, :default => {}
+    preference :seller_info1, :string, :default => ''
+    preference :seller_info2, :string, :default => ''
+    preference :seller_info3, :string, :default => ''
 
     def use_sequential_number?
       print_invoice_next_number.present? && print_invoice_next_number > 0

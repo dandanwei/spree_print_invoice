@@ -30,6 +30,11 @@ unless @hide_prices
     extra_row_count += 1
     data << [nil, nil, nil, nil, adjustment.label, adjustment.display_amount.to_s]
   end
+  
+  if @order.all_adjustments.tax.size == 0
+    extra_row_count += 1
+    data << [nil, nil, nil, nil, "VAT 0%", "0"]
+  end
 
   @order.shipments.each do |shipment|
     extra_row_count += 1
@@ -37,6 +42,14 @@ unless @hide_prices
   end
 
   data << [nil, nil, nil, nil, Spree.t(:total), @order.display_total.to_s]
+  
+  if @order.payment_state == "paid"
+    @order.payments.valid.each do |payment|
+      extra_row_count += 1
+      data << [nil, "Payment completed with "+payment.payment_method.name + ".", nil, nil, nil, nil]
+    end
+  end
+  
 end
 
 move_down(250)
