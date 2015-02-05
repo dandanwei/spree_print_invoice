@@ -42,7 +42,14 @@ else
 end
 
 if @hide_prices
+  # if no tax charged --> need CN22
+  if @order.all_adjustments.tax.size == 0
+    fill_color '00ff00'
+    fill_circle [200, 710], 5
+  end
+  
   font_size 9
+  font_color '000000'
   text_box "#{@order.number}",
             :at => [200, 700],
             :width => 60,
