@@ -48,7 +48,7 @@ if @hide_prices
     fill_circle [200, 710], 5
   end
   
-  stroke_color '000000'
+  fill_color '000000'
   font_size 9
   text_box "#{@order.number}",
             :at => [200, 700],
