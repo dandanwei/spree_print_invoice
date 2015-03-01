@@ -48,7 +48,7 @@ unless @hide_prices
     end
   end
   
-  @order.adjustments.eligible.each do |adjustment| %>
+  @order.adjustments.eligible.each do |adjustment|
     next if (adjustment.source_type == 'Spree::TaxRate') and (adjustment.amount == 0)
     extra_row_count += 1
     data << [nil, nil, nil, nil, label, adjustment.display_amount.to_s]
