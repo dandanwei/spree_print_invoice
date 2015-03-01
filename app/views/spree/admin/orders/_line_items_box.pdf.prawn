@@ -26,28 +26,49 @@ unless @hide_prices
   data << [""] * 5
   data << [nil, nil, nil, nil, Spree.t(:subtotal), @order.display_item_total.to_s]
 
-  @order.all_adjustments.eligible.each do |adjustment|
-    extra_row_count += 1
-    data << [nil, nil, nil, nil, adjustment.label, adjustment.display_amount.to_s]
+  if @order.line_item_adjustments.exists?
+    if @order.all_adjustments.promotion.eligible.exists?
+      @order.all_adjustments.promotion.eligible.group_by(&:label).each do |label, adjustments|
+        extra_row_count += 1
+        data << [nil, nil, nil, Spree.t(:promotion), label, Spree::Money.new(adjustments.sum(&:amount), currency: @order.currency).to_s]
+      end
+    end
   end
+  
+  @order.shipments.group_by { |s| s.selected_shipping_rate.try(:name) }.each do |name, shipments|
+    extra_row_count += 1
+    data << [nil, nil, nil, nil, name, Spree::Money.new(shipments.sum(&:discounted_cost), currency: @order.currency).to_s]
+                                                        #shipment.display_cost  ??
+  end
+  
+  if @order.all_adjustments.eligible.tax.exists?
+    @order.all_adjustments.eligible.tax.group_by(&:label).each do |label, adjustments|
+      extra_row_count += 1
+      data << [nil, nil, nil, nil, label, Spree::Money.new(adjustments.sum(&:amount), currency: @order.currency).to_s]
+    end
+  end
+  
+  @order.adjustments.eligible.each do |adjustment| %>
+    next if (adjustment.source_type == 'Spree::TaxRate') and (adjustment.amount == 0)
+    extra_row_count += 1
+    data << [nil, nil, nil, nil, label, adjustment.display_amount.to_s]
+  end
+  
   
   if @order.all_adjustments.tax.size == 0
     extra_row_count += 1
     data << [nil, nil, nil, nil, "VAT 0%", "0"]
   end
 
-  @order.shipments.each do |shipment|
-    extra_row_count += 1
-    data << [nil, nil, nil, nil, shipment.shipping_method.name, shipment.display_cost.to_s]
-  end
-
   data << [nil, nil, nil, nil, Spree.t(:total), @order.display_total.to_s]
   
+  extra_row_count += 1
   if @order.payment_state == "paid"
     @order.payments.valid.each do |payment|
-      extra_row_count += 1
-      data << [nil, "Payment completed with "+payment.payment_method.name + ".", nil, nil, nil, nil]
+      data << [nil, "Payment completed with "+payment.payment_method.name + ".", Spree::Money.new(payment.amount, currency: @order.currency).to_s, nil, nil, nil]
     end
+  else
+    data << [nil, "Balance due", nil, nil, nil, nil]
   end
   
 end
