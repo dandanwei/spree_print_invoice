@@ -5,12 +5,14 @@ require 'prawn/layout'
 font @font_face
 
 im = Rails.application.assets.find_asset(Spree::PrintInvoice::Config[:print_invoice_logo_path])
-image im , :at => [0,720], :scale => logo_scale
+if @hide_prices
+  image im , :at => [-20,720], :scale => logo_scale
+else
+  image im , :at => [0,720], :scale => logo_scale
+end
 
 fill_color "E99323"
-if @hide_prices
-  text Spree.t(:packaging_slip), :align => :right, :style => :bold, :size => 18
-else
+if !@hide_prices
   text Spree.t(:customer_invoice), :align => :right, :style => :bold, :size => 18
 end
 fill_color "000000"
@@ -29,7 +31,35 @@ if Spree::PrintInvoice::Config.use_sequential_number? && @order.invoice_number.p
   font @font_face, :size => 9
   text "#{Spree.t(:invoice_date)} #{I18n.l @order.invoice_date}", :align => :right
 
-else
+end
+
+if @hide_prices
+  
+  fill_color '000000'
+  font_size 9
+  text_box "#{@order.number}",
+            :at => [450, 540],
+            :width => 60,
+            :height => 20
+  render :partial => "delivery_address"
+  
+  
+  # if no tax charged --> need CN22
+  if @order.all_adjustments.tax.size == 0
+    fill_color '009a44'
+    fill_circle [450, 395], 3
+    
+    # add cn22
+    im2 = Rails.application.assets.find_asset(Spree::PrintInvoice::Config[:cn22])
+    image im2, :at => [110,745], :height => 280 
+    
+  end
+  
+  move_down 300
+  
+  fill_color '000000'
+  
+  text Spree.t(:packaging_slip), :align => :right, :style => :bold, :size => 16
 
   move_down 2
   font @font_face,  :size => 9
@@ -37,25 +67,9 @@ else
 
   move_down 2
   font @font_face, :size => 9
-  text "#{I18n.l @order.completed_at.to_date}", :align => :right
-
-end
-
-if @hide_prices
-  # if no tax charged --> need CN22
-  if @order.all_adjustments.tax.size == 0
-    fill_color '009a44'
-    fill_circle [230, 710], 2
-  end
+  text "#{I18n.l @order.completed_at.to_date}", :align => :right  
   
-  fill_color '000000'
-  font_size 9
-  text_box "#{@order.number}",
-            :at => [200, 700],
-            :width => 60,
-            :height => 20
-  render :partial => "delivery_address"
-  move_down 230
+  move_up 50
 end
 
 font @font_face, :size => 9

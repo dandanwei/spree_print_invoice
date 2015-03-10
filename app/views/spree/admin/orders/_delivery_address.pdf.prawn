@@ -19,10 +19,9 @@ end
 
 font "Helvetica", :size => 12
 text_box address_info(ship_address),
-          :at => [50, 620],
+          :at => [350, 620],
           :width => 200,
           :height => 100 
 
-stroke_line [0, 490], [270, 490]
-stroke_line [270, 700], [270, 490]                 
+stroke_line [0, 450], [540, 450]
 
