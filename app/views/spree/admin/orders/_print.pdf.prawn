@@ -1,4 +1,5 @@
 require 'prawn/layout'
+require 'date'
 
 @font_face = Spree::PrintInvoice::Config[:print_invoice_font_face]
 
@@ -49,9 +50,64 @@ if @hide_prices
     fill_color '009a44'
     fill_circle [450, 395], 3
     
+    fill_color '000000'
     # add cn22
-    im2 = Rails.application.assets.find_asset(Spree::PrintInvoice::Config[:cn22])
-    image im2, :at => [110,745], :height => 280 
+    if Spree::PrintInvoice::Config[:cn22] != nil
+      im2 = Rails.application.assets.find_asset(Spree::PrintInvoice::Config[:cn22])
+      image im2, :at => [110,745], :height => 280 
+      
+      stroke_axis
+      
+      font_size 9
+      text_box "X", :at => [120, 700], :width => 10, :height => 10   # Custom's declaration attached
+      text_box "X", :at => [192, 682], :width => 10, :height => 10   # Other 
+      
+      if Spree::PrintInvoice::Config[:eori] != nil
+        text_box Spree::PrintInvoice::Config[:eori], :at => [140, 580], :width => 100, :height => 10   # EORI
+      end
+      
+      sek_usd = Spree::PrintInvoice::Config[:sek_usd]
+      
+      text_box DateTime.now.strftime("%Y/%m/%d"), :at => [140, 485], :width => 100, :height => 10   # Date
+      
+      #text_box ('%.0f' % (sek_usd*@order.total)), :at => [253, 600], :width => 30, :height => 10  # total value
+      
+      font_size 7
+      yaxis = 655
+      total_weight = 0.0
+      total_value = 0.0
+      all_hts = ''
+      @order.line_items.each do |item|
+        desc = item.quantity.to_s + "  x  " + item.variant.product.meta_title
+        text_box desc, :at => [120, yaxis], :width => 105, :height => 8   # quantity and item description
+        
+        item_weight = 1.0 * item.quantity * item.variant.weight
+        total_weight += item_weight
+        text_box ('%.3f' % item_weight), :at => [230, yaxis], :width => 30, :height => 8   # item weight
+        
+        item_value = sek_usd*item.price*item.quantity
+        total_value += item_value
+        text_box ('%.0f' % item_value), :at => [253, yaxis], :width => 30, :height => 8   # item value
+        
+        #HS tariff
+        str = item.variant.product.meta_description.match(/HS:(?<num>\d{6});/)
+        hst = str[:num]
+        if all_hts.match(/hst/) == nil
+          if all_hts != ''
+            all_hts += ';  '
+          end
+          all_hts += hst
+        end
+        
+        yaxis += 10
+      end
+      
+      text_box ('%.3f' % total_weight), :at => [230, 600], :width => 30, :height => 10  # total weight
+      text_box ('%.0f' % total_value), :at => [253, 600], :width => 30, :height => 10  # total value
+      
+      text_box (all_hts + '   Sweden'), :at => [120, 600], :width => 100, :height => 10  # total HS tariff
+      
+    end
     
   end
   

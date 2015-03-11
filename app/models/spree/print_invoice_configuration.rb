@@ -11,6 +11,8 @@ module Spree
     preference :seller_info2, :string, :default => ''
     preference :seller_info3, :string, :default => ''
     preference :cn22, :string, :default => nil
+    preference :eori, :string, :default => nil
+    preference :sek_usd, :decimal, :default => 8.0
 
     def use_sequential_number?
       print_invoice_next_number.present? && print_invoice_next_number > 0
