@@ -56,8 +56,6 @@ if @hide_prices
       im2 = Rails.application.assets.find_asset(Spree::PrintInvoice::Config[:cn22])
       image im2, :at => [110,745], :height => 280 
       
-      stroke_axis
-      
       font_size 9
       text_box "X", :at => [120, 700], :width => 10, :height => 10   # Custom's declaration attached
       text_box "X", :at => [192, 682], :width => 10, :height => 10   # Other 
@@ -92,14 +90,14 @@ if @hide_prices
         #HS tariff
         str = item.variant.product.meta_description.match(/HS:(?<num>\d{6});/)
         hst = str[:num]
-        if all_hts.match(/hst/) == nil
+        if all_hts.match(hst) == nil
           if all_hts != ''
             all_hts += ';  '
           end
           all_hts += hst
         end
         
-        yaxis += 10
+        yaxis -= 8
       end
       
       text_box ('%.3f' % total_weight), :at => [230, 600], :width => 30, :height => 10  # total weight
