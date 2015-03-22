@@ -77,7 +77,9 @@ if @hide_prices
       total_value = 0.0
       all_hts = ''
       @order.line_items.each do |item|
-        desc = item.quantity.to_s + "  x  " + item.variant.product.meta_title
+        mstr = item.variant.product.meta_keywords.match(/PN:(?<pn>[A-Za-z0-9\s]*);/)
+        product_name = mstr[:pn]      
+        desc = item.quantity.to_s + "  x  " + product_name
         text_box desc, :at => [120, yaxis], :width => 105, :height => 8   # quantity and item description
         
         item_weight = 1.0 * item.quantity * item.variant.weight
@@ -89,7 +91,7 @@ if @hide_prices
         text_box ('%.0f' % item_value), :at => [253, yaxis], :width => 30, :height => 8   # item value
         
         #HS tariff
-        str = item.variant.product.meta_description.match(/HS:(?<num>\d{6});/)
+        str = item.variant.product.meta_keywords.match(/HS:(?<num>\d{6});/)
         hst = str[:num]
         if all_hts.match(hst) == nil
           if all_hts != ''
